@@ -1,0 +1,14 @@
+services:
+  python-api:
+    build: ./python-app
+    ports:
+      - "5000:5000"
+
+  node-frontend:
+    build: ./node-app
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHON_API=http://python-api:5000/api/hello
+    depends_on:
+      - python-api
