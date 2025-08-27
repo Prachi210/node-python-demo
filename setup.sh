@@ -23,13 +23,13 @@ WORKDIR=$(mktemp -d)
 for f in k8s/python-deployment.yaml k8s/node-deployment-blue.yaml k8s/node-deployment-green.yaml; do
   sed "s/DOCKERHUB_USERNAME/${DOCKERHUB_USERNAME}/g" "$f" > "$WORKDIR/$(basename "$f")"
 done
-cp k8s/python-service.yaml k8s/node-service.yaml k8s/node-color-services.yaml "$WORKDIR/"
+cp k8s/python-service.yaml k8s/node-service.yaml k8s/node-services-color.yaml "$WORKDIR/"
 
 kubectl -n app apply -f "$WORKDIR/python-deployment.yaml"
 kubectl -n app apply -f "$WORKDIR/python-service.yaml"
 kubectl -n app apply -f "$WORKDIR/node-deployment-blue.yaml"
 kubectl -n app apply -f "$WORKDIR/node-deployment-green.yaml"
-kubectl -n app apply -f "$WORKDIR/node-color-services.yaml"
+kubectl -n app apply -f "$WORKDIR/node-services-color.yaml"
 kubectl -n app apply -f "$WORKDIR/node-service.yaml"
 
 echo "${GRN}⟹ Waiting for pods...${RS}"
