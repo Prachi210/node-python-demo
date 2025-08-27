@@ -1,0 +1,21 @@
+controller:
+adminUser: admin
+adminPassword: admin123 # demo only — change in real use!
+serviceType: LoadBalancer
+resources:
+requests:
+cpu: "250m"
+memory: "512Mi"
+limits:
+cpu: "1000m"
+memory: "1024Mi"
+installPlugins:
+- kubernetes
+- workflow-aggregator
+- git
+- blueocean
+- docker-workflow
+rbac:
+create: true
+persistence:
+enabled: false

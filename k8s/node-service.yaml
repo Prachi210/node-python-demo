@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+name: node-service
+namespace: app
+spec:
+selector:
+app: node
+color: blue # initial live color (Jenkins flips this to green later)
+ports:
+- port: 80
+targetPort: 8080
+type: LoadBalancer

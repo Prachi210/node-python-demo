@@ -1,0 +1,79 @@
+pipeline {
+agent any
+
+
+environment {
+KUBE_NAMESPACE = 'app'
+DOCKERHUB_USER = 'pratha97' // <— replace or sed via setup.sh
+NODE_IMAGE = "docker.io/${DOCKERHUB_USER}/node-python-demo-node-frontend"
+}
+
+
+parameters {
+string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Frontend image tag to deploy')
+}
+
+
+stages {
+stage('Show Context') {
+steps {
+sh 'kubectl config current-context'
+sh 'kubectl get ns'
+}
+}
+
+
+stage('Detect Active Color') {
+steps {
+script {
+def current = sh(returnStdout: true, script: "kubectl -n ${KUBE_NAMESPACE} get svc node-service -o jsonpath='{.spec.selector.color}'").trim()
+if (current == 'blue') { env.TARGET = 'green' } else { env.TARGET = 'blue' }
+echo "Current color: ${current}; Target color: ${env.TARGET}"
+}
+}
+}
+
+
+stage('Deploy Target Color') {
+steps {
+sh """
+set -eux
+kubectl -n ${KUBE_NAMESPACE} set image deployment/node-app-${TARGET} node=${NODE_IMAGE}:${IMAGE_TAG} --record
+kubectl -n ${KUBE_NAMESPACE} rollout status deployment/node-app-${TARGET} --timeout=180s
+"""
+}
+}
+
+
+stage('Smoke Test Target') {
+steps {
+sh """
+set -eux
+kubectl -n ${KUBE_NAMESPACE} run curl --image=curlimages/curl:8.8.0 --restart=Never --rm -i -t -- \
+curl -sS http://node-${TARGET}:8080/ | head -n 5
+"""
+}
+}
+
+
+stage('Switch Traffic to Target') {
+steps {
+sh """
+set -eux
+kubectl -n ${KUBE_NAMESPACE} patch svc node-service -p '{"spec":{"selector":{"app":"node","color":"'${TARGET}'"}}}'
+kubectl -n ${KUBE_NAMESPACE} get svc node-service -o jsonpath='{.spec.selector.color}' && echo
+"""
+}
+}
+
+
+stage('Post-Deploy Check') {
+steps {
+sh """
+kubectl -n ${KUBE_NAMESPACE} get pods -l app=node -o wide
+kubectl -n ${KUBE_NAMESPACE} get svc node-service -o wide
+"""
+}
+}
+}
+}
