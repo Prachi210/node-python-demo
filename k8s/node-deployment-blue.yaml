@@ -1,38 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-name: node-app-blue
-namespace: app
+  name: node-app-blue
+  namespace: app
 spec:
-replicas: 2
-selector:
-matchLabels:
-app: node
-color: blue
-template:
-metadata:
-labels:
-app: node
-color: blue
-spec:
-containers:
-- name: node
-image: docker.io/pratha97/node-python-demo-node-frontend:latest
-imagePullPolicy: Always
-env:
-- name: PYTHON_API
-value: http://python-service
-ports:
-- containerPort: 8080
-readinessProbe:
-httpGet:
-path: /
-port: 8080
-initialDelaySeconds: 5
-periodSeconds: 5
-livenessProbe:
-httpGet:
-path: /
-port: 8080
-initialDelaySeconds: 10
-periodSeconds: 10
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node
+      color: blue
+  template:
+    metadata:
+      labels:
+        app: node
+        color: blue
+    spec:
+      containers:
+        - name: node
+          image: docker.io/pratha97/node-python-demo-node-frontend:latest
+          imagePullPolicy: Always
+          env:
+            - name: PYTHON_API
+              value: http://python-service
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
