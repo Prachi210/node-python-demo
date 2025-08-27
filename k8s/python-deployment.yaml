@@ -13,21 +13,21 @@ spec:
       labels:
         app: python
     spec:
-    containers:
-      - name: python
-        image: docker.io/pratha97/node-python-demo-python-api:latest
-        imagePullPolicy: Always
-        ports:
-          - containerPort: 5000
-        readinessProbe:
-          httpGet:
-            path: /api/hello
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /api/hello
-            port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 10
+      containers:
+        - name: python
+          image: docker.io/pratha97/node-python-demo-python-api:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /api/hello
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/hello
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
