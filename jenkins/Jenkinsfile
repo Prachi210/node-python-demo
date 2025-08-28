@@ -1,12 +1,10 @@
 pipeline {
-agent any
-
-
-environment {
-KUBE_NAMESPACE = 'app'
-DOCKERHUB_USER = 'pratha97' // <— replace or sed via setup.sh
-NODE_IMAGE = "docker.io/${DOCKERHUB_USER}/node-python-demo-node-frontend"
-}
+    agent {
+        docker {
+            image 'bitnami/kubectl:latest'   // image that has kubectl preinstalled
+            args '-v /root/.kube:/root/.kube' // mount kubeconfig into the container
+        }
+    }
 
 
 parameters {
